@@ -1,13 +1,9 @@
-/**
- * @jest-environment node
- */
-
 import { enableFetchMocks } from "jest-fetch-mock";
 import { POST } from "./route";
 
 enableFetchMocks();
 
-describe("User Route", () => {
+describe("/api/users", () => {
   test("should signIn successfully", async () => {
     const requestObj = {
       json: async () => ({
