@@ -6,6 +6,42 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Scheduling{
+  id Int @id @default(autoincrement())
+	type String
+	dateTime DateTime
+	address String
+	number Int
+	distric String
+	city String
+	client String
+	phone String
+	email String
+	observation String?
+}
+
+model Technician{
+	id Int @id @default(autoincrement())
+	email String
+	pass String
+	token String?
+}
+
+enum schedulingType {
+  Manutencao
+  Instalacao
+  Orcamento
+}
+
+enum schedulingCity {
+  SaoJoseDosCampos
+  Taubate
+  Tremembe
+  Guaratingueta
+  Jacarei
+  Cruzeiro
 }

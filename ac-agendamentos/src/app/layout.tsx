@@ -1,5 +1,6 @@
 "use client";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
+import { SessionProvider } from "next-auth/react";
 import { createTheme, ThemeProvider } from "@mui/material";
 import "./globals.css";
 
@@ -7,6 +8,9 @@ const customTheme = createTheme({
   palette: {
     primary: {
       main: "#9AD4D6",
+      light: "#9cf4f7",
+      dark: "#7fb1b3",
+      contrastText: "#fff",
     },
   },
   typography: {
@@ -58,9 +62,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={customTheme}>{children} </ThemeProvider>
-        </AppRouterCacheProvider>
+        <SessionProvider>
+          <AppRouterCacheProvider>
+            <ThemeProvider theme={customTheme}>{children} </ThemeProvider>
+          </AppRouterCacheProvider>
+        </SessionProvider>
       </body>
     </html>
   );
