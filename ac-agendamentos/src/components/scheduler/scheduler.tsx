@@ -23,57 +23,78 @@ import React from "react";
 import { GET } from "@/app/api/schedule/route";
 
 interface Form {
+  typeVisit: string;
+  date: string;
+  hour: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
   email: string;
-  password: string;
+  observation: string;
 }
 
 export default function Scheduler() {
   const router = useRouter();
-  const [form, setForm] = useState<Form>({ email: "", password: "" });
-  const [alert, setAlert] = useState<boolean | undefined>(false);
+  const [form, setForm] = useState<Form>({
+    typeVisit: "",
+    date: "",
+    hour: "",
+    street: "",
+    number: "",
+    neighborhood: "",
+    city: "",
+    email: "",
+    observation: "",
+  });
+  const [alerta, setAlert] = useState<boolean | undefined>(false);
   const [response, setResponse] = useState<String>("");
-  const calendarRef = useRef(null);
+  const calendarRef = React.useRef();
   const [events, setEvents] = useState([]);
   async function getData() {
-    const response = await fetch(`/api/schedule`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response);
-    if (response?.ok) {
-      setEvents(response);
-    } else {
+    try {
+      const response = await fetch(`/api/schedule`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      await Promise.all(
+        data.data.map((item: any) => {
+          item.date = item.dateTime;
+          item.title = item.type + " - " + item.city;
+        })
+      );
+
+      setEvents(data.data);
+      try {
+        console.log(events);
+        var calendar = new Calendar(calendarRef.current, {
+          plugins: [dayGridPlugin, interactionPlugin],
+          initialView: "dayGridMonth",
+          height: "100%",
+          expandRows: true,
+          editable: true,
+          selectable: true,
+          events: data.data,
+          eventClick: function (info) {
+            alert("Event: " + info.event.title);
+            console.log(info.event);
+          },
+        });
+
+        calendar.render();
+      } catch (error) {
+        console.log(error);
+      }
+    } catch (error) {
       setAlert(true);
     }
   }
+
   useEffect(() => {
     getData();
-    const calendar = new Calendar(calendarRef.current, {
-      plugins: [dayGridPlugin, interactionPlugin],
-      initialView: "dayGridMonth",
-      width: "100%",
-      height: "100%",
-      expandRows: true,
-      editable: true,
-      selectable: true,
-      events: [
-        { title: "Event 1", date: "2024-05-28" },
-        { title: "Event 2", date: "2024-05-22" },
-      ],
-      dateClick: function (info) {
-        console.log("Clicked on: " + info.dateStr);
-        console.log(
-          "Coordinates: " + info.jsEvent.pageX + "," + info.jsEvent.pageY
-        );
-        console.log("Current view: " + info.view.type);
-        // change the day's background color just for fun
-        info.dayEl.style.backgroundColor = "red";
-      },
-    });
-
-    calendar.render();
   }, []);
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prevForm) => ({
@@ -92,14 +113,14 @@ export default function Scheduler() {
   }
 
   useEffect(() => {
-    if (alert) {
+    if (alerta) {
       let timer1 = setTimeout(() => setAlert(false), 4000);
 
       return () => {
         clearTimeout(timer1);
       };
     }
-  }, [alert]);
+  }, [alerta]);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -145,7 +166,7 @@ export default function Scheduler() {
           right: "10px",
         }}
       >
-        <Collapse in={alert}>
+        <Collapse in={alerta}>
           <Alert
             variant="filled"
             severity="error"

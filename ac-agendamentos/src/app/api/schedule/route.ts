@@ -6,6 +6,7 @@ import NextAuth from "next-auth";
 const handler = async () => {
   try {
     const post = await prisma.scheduling.findMany({});
+    console.log(post);
     console.log("post");
     return NextResponse.json({ data: post }, { status: 200 });
   } catch (error) {
