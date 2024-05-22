@@ -102,6 +102,7 @@ export default function SignIn() {
           />
         </FormGroup>
         <Button
+          id="submit"
           variant="contained"
           sx={{ alignSelf: "center" }}
           onClick={submit}
